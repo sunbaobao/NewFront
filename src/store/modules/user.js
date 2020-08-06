@@ -1,6 +1,6 @@
 import { login, logout, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
-import { resetRouter } from '@/router'
+import router, { resetRouter } from '@/router'
 
 const getDefaultState = () => {
   return {
@@ -57,7 +57,7 @@ const actions = {
           return reject('Verification failed, please Login again.')
         }
 
-        const { roles, name, avatar, introduction } = data
+        const { roles, name, avatar } = data
 
         // roles must be a non-empty array
         if (!roles || roles.length <= 0) {
