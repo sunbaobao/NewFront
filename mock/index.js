@@ -3,10 +3,12 @@ const { param2Obj } = require('./utils')
 
 const user = require('./user')
 const table = require('./table')
+const remoteSearch = require('./remote-search')
 
 const mocks = [
   ...user,
-  ...table
+  ...table,
+  ...remoteSearch
 ]
 
 // for front mock
