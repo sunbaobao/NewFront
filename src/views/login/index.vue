@@ -48,10 +48,10 @@
         </span>
       </el-form-item>
       <el-form-item prop="code">
-        <el-col :span="15">
-          <el-input ref="code" v-model="loginForm.code" autocomplete="off" />
+        <el-col :span="16">
+          <el-input ref="code" v-model="loginForm.code" name="code" autocomplete="off" />
         </el-col>
-        <el-col :span="9">
+        <el-col :span="8" style="background-color: white;line-height: 0;">
           <img :src="captchaImg" alt="" class="captcha" @click="reloadCaptha()">
         </el-col>
       </el-form-item>
@@ -95,7 +95,7 @@ export default {
     return {
       loginForm: {
         username: 'admin',
-        password: '111111',
+        password: '123456',
         code: ''
       },
       loginRules: {

@@ -1,9 +1,10 @@
 <template>
-  <div>
+  <div style="padding: 20px;">
     <el-table
       v-loading="loading"
       :data="tableData.filter(data => !search || data.username.toLowerCase().includes(search.toLowerCase()))"
       style="width: 100%"
+      :border="true"
     >
       <el-table-column
         label="创建时间"
@@ -51,14 +52,17 @@
         @current-change="handleCurrentChange"
       />
     </div>
+    <user-setting v-bind="settingProp" @sure="sure" />
   </div>
-
 </template>
 
 <script>
-import dateFtt from '@/utils/dateFtt';
+import dateFtt from '@/utils/dateFtt'
+import UserSetting from '@/components/userSetting/userSetting'
+
 export default {
   name: 'User',
+  components: { UserSetting },
   data() {
     return {
       tableData: [
@@ -71,29 +75,36 @@ export default {
       currentPage: 1,
       total: 0,
       loading: true,
-      pageSize: 10
-    };
+      pageSize: 10,
+      settingProp: {
+        dialogFormVisible: false,
+        userName: '',
+        dialogTitle: '修改信息'
+      }
+    }
   },
   mounted() {
-    this.getUserList();
+    this.getUserList()
   },
   methods: {
     handleEdit(index, row) {
-      console.log(index, row);
+      console.log(index, row, row.username)
+      this.settingProp.dialogFormVisible = true
+      this.settingProp.userName = row.username
     },
     handleDelete(index, row) {
-      console.log(index, row);
+      console.log(index, row)
     },
     handleCurrentChange(val) {
-      this.currentPage = val;
-      this.getUserList();
+      this.currentPage = val
+      this.getUserList()
     },
     handleSizeChange(val) {
-      this.pageSize = val;
-      this.getUserList();
+      this.pageSize = val
+      this.getUserList()
     },
     getUserList() {
-      this.loading = true;
+      this.loading = true
       this.axios({
         method: 'GET',
         url: 'server/user/allUser',
@@ -102,16 +113,26 @@ export default {
           pageSize: this.pageSize
         }
       }).then((res) => {
-        this.loading = false;
-        this.tableData = res.data.data.user;
-        this.total = res.data.data.total;
-      });
+        this.loading = false
+        this.tableData = res.data.data.user
+        this.total = res.data.data.total
+      })
     },
     toLocalDate(row, column, cellValue, index) {
-      return dateFtt('yyyy-MM-dd hh:mm:ss', new Date(cellValue));
+      return dateFtt('yyyy-MM-dd hh:mm:ss', new Date(cellValue))
+    },
+    sure(res) {
+      this.settingProp.dialogFormVisible = false
+      if (res.type === 'sure') {
+        // 成功
+        this.$message({
+          message: res.message,
+          type: res.res === 0 ? 'success' : 'error'
+        })
+      }
     }
   }
-};
+}
 </script>
 
 <style scoped>
