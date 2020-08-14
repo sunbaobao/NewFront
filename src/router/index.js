@@ -88,15 +88,24 @@ export const constantRoutes = [
                 name: 'list',
                 component: () => import('@/views/user/user'),
                 meta: { title: '用户列表', icon: 'user' }
-            },
-            {
-                path: 'tree',
-                name: 'Tree',
-                component: () => import('@/views/tree/index'),
-                meta: { title: '树节点', icon: 'tree' }
             }
         ]
     },
+  {
+    path: '/log',
+    component: Layout,
+    redirect: '/log/loginLog',
+    name: 'log',
+    meta: { title: '登陆日志', icon: 'el-icon-user' },
+    children: [
+      {
+        path: 'loginLog',
+        name: 'loginLog',
+        component: () => import('@/views/log/loginLog'),
+        meta: { title: '登陆日志', icon: 'documentation' }
+      }
+    ]
+  },
     {
         path: '/form',
         component: Layout,

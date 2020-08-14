@@ -37,4 +37,19 @@ export default {
     padding-right: 15px;
   }
 }
+
+.fixed-header+.app-main {
+  padding-top: 50px;
+}
+
+.hasTagsView {
+  .app-main {
+    /* 84 = navbar + tags-view = 50 + 34 */
+    min-height: calc(100vh - 84px);
+  }
+
+  .fixed-header+.app-main {
+    padding-top: 84px;
+  }
+}
 </style>
