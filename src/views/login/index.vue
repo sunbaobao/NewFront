@@ -73,13 +73,13 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
+// import { validUsername } from '@/utils/validate'
 
 export default {
   name: 'Login',
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
+      if (value.length < 3) {
         callback(new Error('Please enter the correct user name'))
       } else {
         callback()
@@ -135,6 +135,16 @@ export default {
           this.$store.dispatch('user/login', this.loginForm).then(() => {
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
+            // 登录成功 加日志
+            // { username, time, IP, browser, description }
+            this.axios({
+              url: '/server/log/log001',
+              method: 'post',
+              data: {
+                username: this.loginForm.username,
+                browser: ''
+              }
+            })
           }).catch(() => {
             this.loading = false
           })

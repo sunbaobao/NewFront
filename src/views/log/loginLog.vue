@@ -1,5 +1,35 @@
 <template>
   <div style="padding: 20px;">
+    <div class="block">
+      <el-form :model="logForm" class="demo-form-inline" label-width="80px">
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="名称">
+              <el-input v-model="logForm.username" placeholder="名称" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="时间">
+              <el-date-picker
+                v-model="logForm.time"
+                type="datetimerange"
+                :picker-options="pickerOptions"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                align="right"
+              />
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="4">
+            <el-form-item>
+              <el-button type="primary" @click="onQuery">查询</el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
     <el-table
       v-loading="loading"
       :data="tableData"
@@ -33,19 +63,6 @@
             placeholder="输入关键字搜索"
           />
         </template>
-        <template v-slot:default="scope">
-          <el-button
-            size="mini"
-            @click="handleEdit(scope.$index, scope.row)"
-          >Edit
-          </el-button>
-          <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.$index, scope.row)"
-          >Delete
-          </el-button>
-        </template>
       </el-table-column>
     </el-table>
     <div class="" style="padding-top: 20px;">
@@ -60,17 +77,14 @@
         @current-change="handleCurrentChange"
       />
     </div>
-    <user-setting ref="UserSetting" v-bind="settingProp" @sure="sure" />
   </div>
 </template>
 
 <script>
 import dateFtt from '@/utils/dateFtt'
-import UserSetting from '@/components/userSetting/userSetting'
 
 export default {
-  name: 'User',
-  components: { UserSetting },
+  name: 'LoginLog',
   data() {
     return {
       tableData: [
@@ -84,10 +98,36 @@ export default {
       total: 0,
       loading: true,
       pageSize: 10,
-      settingProp: {
-        dialogFormVisible: false,
-        userName: '',
-        dialogTitle: '修改信息'
+      logForm: {
+        username: '',
+        time: ''
+      },
+      pickerOptions: {
+        shortcuts: [{
+          text: '最近一周',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近一个月',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近三个月',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+            picker.$emit('pick', [start, end])
+          }
+        }]
       }
     }
   },
@@ -95,15 +135,6 @@ export default {
     this.getUserList()
   },
   methods: {
-    handleEdit(index, row) {
-      console.log(index, row, row.username)
-      // this.settingProp.dialogFormVisible = true
-      // this.settingProp.userName = row.username
-      this.$refs.UserSetting.show(row.username)
-    },
-    handleDelete(index, row) {
-      console.log(index, row)
-    },
     handleCurrentChange(val) {
       this.currentPage = val
       this.getUserList()
@@ -115,11 +146,12 @@ export default {
     getUserList() {
       this.loading = true
       this.axios({
-        method: 'GET',
-        url: 'server/user/allUser',
-        params: {
+        method: 'post',
+        url: 'server/log/log002',
+        data: {
           currentPage: this.currentPage,
-          pageSize: this.pageSize
+          pageSize: this.pageSize,
+          ...this.logForm
         }
       }).then((res) => {
         this.loading = false
@@ -130,16 +162,9 @@ export default {
     toLocalDate(row, column, cellValue) {
       return dateFtt('yyyy-MM-dd hh:mm:ss', new Date(cellValue))
     },
-    sure(res) {
-      this.settingProp.dialogFormVisible = false
-      if (res.type === 'sure') {
-        // 成功
-        this.getUserList();
-        this.$message({
-          message: res.message,
-          type: res.res === 0 ? 'success' : 'error'
-        })
-      }
+    onQuery() {
+      console.log(this.logForm)
+      this.getUserList()
     }
   }
 }
