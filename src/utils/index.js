@@ -161,7 +161,7 @@ export function param2Obj(url) {
 /**
  * 获取浏览器版本
  */
-export function bro() {
+export function getBro() {
   var broName = 'Runing'
   var strStart = 0
   var strStop = 0

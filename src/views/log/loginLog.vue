@@ -1,15 +1,15 @@
 <template>
   <div style="padding: 20px;">
     <div class="block">
-      <el-form :model="logForm" class="demo-form-inline" label-width="80px">
+      <el-form ref="logForm" :model="logForm" :rules="rules" class="demo-form-inline" label-width="80px">
         <el-row>
           <el-col :span="8">
-            <el-form-item label="名称">
+            <el-form-item label="名称" prop="username">
               <el-input v-model="logForm.username" placeholder="名称" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="时间">
+            <el-form-item label="时间" prop="time">
               <el-date-picker
                 v-model="logForm.time"
                 type="datetimerange"
@@ -38,7 +38,7 @@
     >
       <el-table-column
         label="创建时间"
-        prop="create_at"
+        prop="time"
         :formatter="toLocalDate"
       />
       <el-table-column
@@ -46,12 +46,12 @@
         prop="username"
       />
       <el-table-column
-        label="电话"
-        prop="tel"
+        label="IP"
+        prop="IP"
       />
       <el-table-column
-        label="email"
-        prop="email"
+        label="浏览器版本"
+        prop="browser"
       />
       <el-table-column
         align="right"
@@ -87,20 +87,15 @@ export default {
   name: 'LoginLog',
   data() {
     return {
-      tableData: [
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }],
+      tableData: [],
       search: '',
       currentPage: 1,
       total: 0,
       loading: true,
       pageSize: 10,
       logForm: {
-        username: '',
-        time: ''
+        username: this.$store.getters.name,
+        time: [new Date().getTime() - 3600 * 1000 * 24 * 30, new Date()]
       },
       pickerOptions: {
         shortcuts: [{
@@ -128,6 +123,10 @@ export default {
             picker.$emit('pick', [start, end])
           }
         }]
+      },
+      rules: {
+        username: [{ required: true, trigger: 'blur', message: '请输入名称' }],
+        time: [{ required: true, trigger: 'blur', message: '请选择时间' }]
       }
     }
   },
@@ -154,9 +153,9 @@ export default {
           ...this.logForm
         }
       }).then((res) => {
-        this.loading = false
-        this.tableData = res.data.data.user
-        this.total = res.data.data.total
+        this.loading = false;
+        this.tableData = res.data.data.logData;
+        this.total = res.data.data.total;
       })
     },
     toLocalDate(row, column, cellValue) {
@@ -164,7 +163,13 @@ export default {
     },
     onQuery() {
       console.log(this.logForm)
-      this.getUserList()
+      this.$refs.logForm.validate((valid) => {
+          if (valid) {
+             this.getUserList();
+          } else {
+              this.$message('请输入正确的格式')
+          }
+      })
     }
   }
 }

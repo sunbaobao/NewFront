@@ -73,7 +73,7 @@
 </template>
 
 <script>
-// import { validUsername } from '@/utils/validate'
+ import { getBro } from '@/utils/index'
 
 export default {
   name: 'Login',
@@ -142,7 +142,8 @@ export default {
               method: 'post',
               data: {
                 username: this.loginForm.username,
-                browser: ''
+                browser: getBro(),
+                description: '登录'
               }
             })
           }).catch(() => {
