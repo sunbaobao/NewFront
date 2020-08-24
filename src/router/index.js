@@ -91,21 +91,44 @@ export const constantRoutes = [
             }
         ]
     },
-  {
-    path: '/log',
-    component: Layout,
-    redirect: '/log/loginLog',
-    name: 'log',
-    meta: { title: '登陆日志', icon: 'el-icon-user' },
-    children: [
-      {
-        path: 'loginLog',
-        name: 'loginLog',
-        component: () => import('@/views/log/loginLog'),
-        meta: { title: '登陆日志', icon: 'documentation' }
-      }
-    ]
-  },
+    {
+        path: '/log',
+        component: Layout,
+        redirect: '/log/loginLog',
+        name: 'log',
+        meta: { title: '登陆日志', icon: 'el-icon-user' },
+        children: [
+            {
+                path: 'loginLog',
+                name: 'loginLog',
+                component: () => import('@/views/log/loginLog'),
+                meta: { title: '登陆日志', icon: 'documentation' }
+            }
+        ]
+    },
+    {
+        path: '/bd',
+        component: Layout,
+        redirect: '/bd/face',
+        name: 'bdAPI',
+        meta: {
+            title: '百度接口案例', icon: 'el-icon-s-platform'
+        },
+        children: [
+            {
+                path: 'face',
+                name: 'face',
+                component: () => import('@/views/Baidu/FaceDetect'),
+                meta: { title: '人脸识别 ', icon: 'people' }
+            },
+            {
+                path: 'orc',
+                name: 'orc',
+                component: () => import('@/views/Baidu/orc'),
+                meta: { title: '文字识别', icon: 'skill' }
+            }
+        ]
+    },
     {
         path: '/form',
         component: Layout,
