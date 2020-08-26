@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="padding:20px;">
     <el-upload
       class="avatar-uploader"
       action="/bdApi/FaceDetect"
@@ -31,57 +31,16 @@
       </el-col>
       <el-col v-if="!result.error_code" :span="24">
         <div class="grid-content bg-purple-dark">
-          <span class="lable-left">人脸数目：</span>
-          {{ result.result.face_num }}
+          <span class="lable-left">数字行数：</span>
+          {{ result.words_result_num }}
         </div>
       </el-col>
       <template v-if="!result.error_code">
-        <el-table :data="result.result.face_list" style="width: 100%">
-          <el-table-column type="expand">
-            <template slot-scope="props">
-              <el-form label-position="left" inline class="demo-table-expand">
-                <el-form-item label="人脸置信度">
-                  <span>{{ props.row.face_probability }}</span>
-                </el-form-item>
-                <el-form-item label="年龄">
-                  <span>{{ props.row.age }}</span>
-                </el-form-item>
-                <el-form-item label="美丑">
-                  <span>{{ props.row.beauty }}</span>
-                </el-form-item>
-                <el-form-item label="表情">
-                  <span>{{ props.row.expression.type }}</span>
-                </el-form-item>
-                <el-form-item label="表情可信度">
-                  <span>{{ props.row.expression.probability }}</span>
-                </el-form-item>
-                <el-form-item label="左边界的距离">
-                  <span>{{ props.row.location.left }}</span>
-                </el-form-item>
-                <el-form-item label="上边界的距离">
-                  <span>{{ props.row.location.top }}</span>
-                </el-form-item>
-                <el-form-item label="宽度">
-                  <span>{{ props.row.location.width }}</span>
-                </el-form-item>
-                <el-form-item label="高度">
-                  <span>{{ props.row.location.height }}</span>
-                </el-form-item>
-                <el-form-item label="性别">
-                  <span>{{ props.row.gender.type }}</span>
-                </el-form-item>
-                <el-form-item label="性别可信度">
-                  <span>{{ props.row.gender.probability }}</span>
-                </el-form-item>
-                <el-form-item label="人脸类型">
-                  <span>{{ props.row.face_type.type }}({{ props.row.face_type.probability }})</span>
-                </el-form-item>
-              </el-form>
-            </template>
-          </el-table-column>
-          <el-table-column label="年龄" prop="age" />
-          <el-table-column label="beauty，美丑打分" prop="beauty" />
-          <el-table-column label="face_probability，人脸置信度" prop="face_probability" />
+        <el-table :data="result.words_result" style="width: 100%">
+
+          <el-table-column label="文字" prop="words" />
+          <el-table-column label="行置信度平均值" prop="probability.average" />
+
         </el-table>
       </template>
     </el-row>
@@ -89,7 +48,7 @@
   </div>
 </template>
 <script>
-// import qs from 'querystring';
+ import qs from 'querystring';
 
 export default {
   name: 'Orc',
@@ -97,8 +56,8 @@ export default {
     return {
         imageUrl: '',
         result: {
-          face_num: '',
-          result: [],
+          words_result_num: '',
+          words_result: [],
           log_id: '',
           error_code: 0,
           error_msg: ''
@@ -118,7 +77,10 @@ export default {
       fileReader.onload = () => {
         this.imageUrl = fileReader.result;
         const data = {
-          image: this.imageUrl.replace(/data:image\/(jpeg|png);base64,/, '')
+          image: this.imageUrl.replace(/data:image\/(jpeg|png);base64,/, ''),
+          detect_language: true, // 是否检测语言，默认不检测
+          paragraph: true, // 是否输出段落信息
+          probability: true // 是否返回识别结果中每一行的置信度
         };
         // console.log(data);
         this.loading = true;
@@ -128,7 +90,7 @@ export default {
           this.axios({
             method: 'POST',
             headers: { 'content-type': 'application/x-www-form-urlencoded' },
-            data: data,
+            data: qs.stringify(data),
             url
           }).then(res => {
               // console.log(res);
