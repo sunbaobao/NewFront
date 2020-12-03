@@ -169,7 +169,6 @@ export default {
       vertical-align: middle;
     }
   }
-
   &.show {
     .header-search-select {
       width: 210px;
