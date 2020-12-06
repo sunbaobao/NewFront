@@ -58,7 +58,7 @@ module.exports = {
           '^/user': ''
         }
       },
-      '/server': {
+      '^/server': {
         target: process.env.API_SERVER,
         changeOrigin: true,
         pathRewrite: {
